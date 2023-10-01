@@ -112,7 +112,7 @@ function ProblemView({
             className={classNames(
               "flex flex-col border-1 rounded-xl p-4 shadow-md bg-gray-100 select-none",
               c.state === null
-                ? "cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all"
+                ? "cursor-pointer lg:hover:shadow-xl lg:hover:-translate-y-1 transition-all"
                 : c.state
                 ? "bg-green-300"
                 : "bg-red-300"
