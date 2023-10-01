@@ -89,7 +89,7 @@ function ProblemView({
   };
 
   return (
-    <div className="flex flex-col gap-y-24 text-9xl font-semibold select-none">
+    <div className="flex flex-col gap-y-24 lg:text-9xl font-semibold select-none text-4xl">
       <div className="flex flex-row justify-center w-full">
         <div className="flex flex-row rounded-xl bg-yellow-50 p-8 gap-x-2 shadow-md">
           <div className="">{p.left}</div>
@@ -106,7 +106,7 @@ function ProblemView({
         </div>
       </div>
 
-      <div className="flex flex-row gap-x-16 justify-center">
+      <div className="flex flex-row gap-x-4 lg:gap-x-16 justify-center">
         {choices.map((c, i) => (
           <div
             className={classNames(
@@ -204,29 +204,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center p-24 bg-blue-200 text-black pt-32">
       {gameState.state === "won" && (
         <>
-          <div className="pt-16 text-8xl max-w-4xl font-bold text-green-600">
-            Gagné!! Tu as fait {gameState.score} points en 2mn.
-          </div>
-          <div className="pt-16 text-2xl">
-            <button
-              className="bg-green-100 p-4 rounded-xl shadow-md font-bold"
-              onClick={() =>
-                setGameState({
-                  ...gameState,
-                  state: "playing",
-                  timeLeft: 120,
-                  score: 0,
-                })
-              }
-            >
-              Reommencer
-            </button>
-          </div>
-        </>
-      )}
-      {gameState.state === "lost" && (
-        <>
-          <div className="pt-16 text-8xl max-w-4xl font-bold text-orange-600">
+          <div className="pt-16 text-4xl lg:text-8xl max-w-4xl font-bold text-green-600">
             Tu as fait {gameState.score} points en 2mn.
           </div>
           <div className="pt-16 text-2xl">
@@ -237,11 +215,35 @@ export default function Home() {
                   ...gameState,
                   state: "playing",
                   timeLeft: 120,
+                  gameType: gameState.gameType,
                   score: 0,
                 })
               }
             >
-              Reommencer
+              Recommencer
+            </button>
+          </div>
+        </>
+      )}
+      {gameState.state === "lost" && (
+        <>
+          <div className="pt-16 text-4xl lg:text-8xl max-w-4xl font-bold text-orange-600">
+            Tu as fait {gameState.score} points en 2mn.
+          </div>
+          <div className="pt-16 text-2xl">
+            <button
+              className="bg-green-100 p-4 rounded-xl shadow-md font-bold"
+              onClick={() =>
+                setGameState({
+                  ...gameState,
+                  state: "playing",
+                  timeLeft: 120,
+                  gameType: gameState.gameType,
+                  score: 0,
+                })
+              }
+            >
+              Recommencer
             </button>
           </div>
         </>
@@ -249,16 +251,16 @@ export default function Home() {
       {gameState.state === "playing" && (
         <>
           <ProblemView p={gameState.problem} onChoice={handleChoice} />
-          <div className="flex flex-col justify-center gap-y-4 mt-32 font-mono">
-            <div className="text-5xl font-semibold">
+          <div className="flex flex-col justify-center gap-y-4 mt-16 lg:mt-32 font-mono">
+            <div className="text-2xl lg:text-5xl font-semibold">
               Score:{" "}
-              <span className="text-violet-600 text-6xl">
+              <span className="text-violet-600 text-3xl lg:text-6xl">
                 {gameState.score}
               </span>
             </div>
-            <div className="text-5xl font-semibold">
+            <div className="text-2xl lg:text-5xl font-semibold">
               Temps restant:{" "}
-              <span className="text-violet-600 text-6xl">
+              <span className="text-violet-600 text-3xl lg:text-6xl">
                 {gameState.timeLeft}s
               </span>
             </div>
