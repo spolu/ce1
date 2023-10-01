@@ -187,7 +187,7 @@ export default function Home() {
           if (s.timeLeft === 0) {
             return {
               ...s,
-              state: s.score > 10 ? "won" : "lost",
+              state: s.score >= 20 ? "won" : "lost",
             };
           }
           return {
@@ -270,7 +270,7 @@ export default function Home() {
       {gameState.state === "waiting" && (
         <>
           <div className="pt-16 text-2xl max-w-xl">
-            Tu dois faire 10 points en 2mn.
+            Tu dois faire 20 points en 2mn.
             <br />
             <br />
             Tu gagnes 1 point par bonne réponse et perds 1 point par mauvaise
