@@ -133,37 +133,33 @@ type GameState = {
   gameType: "table-addition" | "complement-10";
   timeLeft: number;
   score: number;
+  problem: Problem;
 };
 
 export default function Home() {
-  const [p, setP] = useState<Problem | null>(null);
+  const newProblem = (gameType: "table-addition" | "complement-10") => {
+    const left = Math.floor(Math.random() * 5) + 1;
+    const right =
+      gameType === "table-addition"
+        ? Math.floor(Math.random() * 9) + 1
+        : 10 - left;
+    const swap = Math.random() > 0.5;
+    const p: Problem = {
+      type: gameType,
+      left: swap ? right : left,
+      right: swap ? left : right,
+      answer: left + right,
+    };
+    return p;
+  };
 
   const [gameState, setGameState] = useState<GameState>({
     state: "waiting",
     gameType: "table-addition",
     timeLeft: 120,
     score: 0,
+    problem: newProblem("table-addition"),
   });
-
-  const newProblem = () => {
-    const left = Math.floor(Math.random() * 5) + 1;
-    const right =
-      gameState.gameType === "table-addition"
-        ? Math.floor(Math.random() * 9) + 1
-        : 10 - left;
-    const swap = Math.random() > 0.5;
-    const p: Problem = {
-      type: gameState.gameType,
-      left: swap ? right : left,
-      right: swap ? left : right,
-      answer: left + right,
-    };
-    setP(p);
-  };
-
-  useEffect(() => {
-    newProblem();
-  }, [gameState.gameType]);
 
   const handleChoice = (c: Choice) => {
     if (c.correct) {
@@ -171,9 +167,9 @@ export default function Home() {
         return {
           ...s,
           score: s.score + 1,
+          problem: newProblem(s.gameType),
         };
       });
-      newProblem();
     } else {
       setGameState((s) => {
         return {
@@ -206,7 +202,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24 bg-blue-200 text-black pt-32">
-      {gameState.state === "won" && p && (
+      {gameState.state === "won" && (
         <>
           <div className="pt-16 text-8xl max-w-4xl font-bold text-green-600">
             Gagné!! Tu as fait {gameState.score} points en 2mn.
@@ -228,7 +224,7 @@ export default function Home() {
           </div>
         </>
       )}
-      {gameState.state === "lost" && p && (
+      {gameState.state === "lost" && (
         <>
           <div className="pt-16 text-8xl max-w-4xl font-bold text-orange-600">
             Tu as fait {gameState.score} points en 2mn.
@@ -250,9 +246,9 @@ export default function Home() {
           </div>
         </>
       )}
-      {gameState.state === "playing" && p && (
+      {gameState.state === "playing" && (
         <>
-          <ProblemView p={p} onChoice={handleChoice} />
+          <ProblemView p={gameState.problem} onChoice={handleChoice} />
           <div className="flex flex-col justify-center gap-y-4 mt-32 font-mono">
             <div className="text-5xl font-semibold">
               Score:{" "}
@@ -291,6 +287,7 @@ export default function Home() {
                   state: "playing",
                   timeLeft: 120,
                   score: 0,
+                  problem: newProblem("table-addition"),
                 })
               }
             >
@@ -305,6 +302,7 @@ export default function Home() {
                   state: "playing",
                   timeLeft: 120,
                   score: 0,
+                  problem: newProblem("complement-10"),
                 })
               }
             >
