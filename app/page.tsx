@@ -130,22 +130,34 @@ function ProblemView({
 
 type GameState = {
   state: "waiting" | "playing" | "won" | "lost";
-  gameType: "table-addition" | "complement-10";
+  gameType: "table-addition-1-5" | "table-addition-6-10" | "complement-10";
   timeLeft: number;
   score: number;
   problem: Problem;
 };
 
 export default function Home() {
-  const newProblem = (gameType: "table-addition" | "complement-10") => {
+  const newProblem = (
+    gameType: "table-addition-1-5" | "table-addition-6-10" | "complement-10"
+  ) => {
     const left = Math.floor(Math.random() * 5) + 1;
-    const right =
-      gameType === "table-addition"
-        ? Math.floor(Math.random() * 9) + 1
-        : 10 - left;
+    let right = 1;
+    let type: "table-addition" | "complement-10" = "table-addition";
+    switch (gameType) {
+      case "table-addition-1-5":
+        right = Math.floor(Math.random() * 5) + 1;
+        break;
+      case "table-addition-6-10":
+        right = Math.floor(Math.random() * 5) + 6;
+        break;
+      case "complement-10":
+        right = 10 - left;
+        type = "complement-10";
+        break;
+    }
     const swap = Math.random() > 0.5;
     const p: Problem = {
-      type: gameType,
+      type,
       left: swap ? right : left,
       right: swap ? left : right,
       answer: left + right,
@@ -155,10 +167,10 @@ export default function Home() {
 
   const [gameState, setGameState] = useState<GameState>({
     state: "waiting",
-    gameType: "table-addition",
+    gameType: "table-addition-1-5",
     timeLeft: 120,
     score: 0,
-    problem: newProblem("table-addition"),
+    problem: newProblem("table-addition-1-5"),
   });
 
   const handleChoice = (c: Choice) => {
@@ -285,15 +297,30 @@ export default function Home() {
               onClick={() =>
                 setGameState({
                   ...gameState,
-                  gameType: "table-addition",
+                  gameType: "table-addition-1-5",
                   state: "playing",
                   timeLeft: 120,
                   score: 0,
-                  problem: newProblem("table-addition"),
+                  problem: newProblem("table-addition-1-5"),
                 })
               }
             >
               {"Tables d'additions 1-5"}
+            </button>
+            <button
+              className="flex bg-green-100 p-4 rounded-xl shadow-md font-bold"
+              onClick={() =>
+                setGameState({
+                  ...gameState,
+                  gameType: "table-addition-6-10",
+                  state: "playing",
+                  timeLeft: 120,
+                  score: 0,
+                  problem: newProblem("table-addition-6-10"),
+                })
+              }
+            >
+              {"Tables d'additions 6-10"}
             </button>
             <button
               className="flex bg-green-100 p-4 rounded-xl shadow-md font-bold"
