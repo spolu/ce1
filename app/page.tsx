@@ -240,8 +240,10 @@ export default function Home() {
         });
       }
     }, 1000);
-    return () => clearInterval(interval);
-  }, [gameState]);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [gameState.state]);
 
   return (
     <main className="font-nunito flex min-h-screen flex-col items-center bg-indigo-100 text-black pt-16">
