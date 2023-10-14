@@ -105,7 +105,7 @@ function ProblemView({
   return (
     <div className="flex flex-col gap-y-16 font-semibold select-none text-4xl">
       <div className="flex flex-row justify-center w-full">
-        <div className="flex flex-row rounded-xl bg-yellow-50 p-8 gap-x-2 shadow-md">
+        <div className="flex flex-row rounded-xl bg-indigo-500 p-8 gap-x-2 shadow-md text-white">
           <div className="">{p.left}</div>
           {["addition", "complement-10"].includes(p.type) && (
             <div className="font-light">+</div>
@@ -129,7 +129,7 @@ function ProblemView({
         {choices.map((c, i) => (
           <div
             className={classNames(
-              "flex flex-col border-1 w-32 items-center select-none rounded-xl text-indigo-800 p-4 shadow-md bg-gray-100 select-none",
+              "flex flex-col border-1 w-32 items-center select-none rounded-xl text-indigo-900 p-4 shadow-md bg-gray-100 select-none",
               c.state === null
                 ? "cursor-pointer lg:hover:shadow-md lg:hover:-translate-y-1 transition-all"
                 : c.state
@@ -249,7 +249,7 @@ export default function Home() {
     <main className="font-nunito flex min-h-screen flex-col items-center bg-indigo-100 text-black pt-16">
       {gameState.state === "finished" && (
         <>
-          <div className="text-2xl max-w-4xl font-bold text-violet-600">
+          <div className="text-2xl max-w-4xl font-bold text-indigo-600">
             Tu as fait {gameState.score} points en 2mn.
           </div>
           <div className="pt-8 text-base">
@@ -275,13 +275,13 @@ export default function Home() {
           <div className="flex flex-col text-center justify-center gap-y-2 mt-16">
             <div className="text-xl font-semibold">
               Score:{" "}
-              <span className="text-violet-600 text-2xl ">
+              <span className="text-indigo-600 text-2xl ">
                 {gameState.score}
               </span>
             </div>
             <div className="text-xl font-semibold">
               Temps restant:{" "}
-              <span className="text-violet-600 text-2xl">
+              <span className="text-indigo-600 text-2xl">
                 {gameState.timeLeft}s
               </span>
             </div>
