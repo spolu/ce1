@@ -1,6 +1,6 @@
 "use client";
 
-import { MouseEvent, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -103,23 +103,21 @@ function ProblemView({
   };
 
   return (
-    <div className="flex flex-col gap-y-16 font-semibold select-none text-4xl text-nunito">
+    <div className="flex flex-col gap-y-16 font-semibold select-none text-4xl">
       <div className="flex flex-row justify-center w-full">
         <div className="flex flex-row rounded-xl bg-yellow-50 p-8 gap-x-2 shadow-md">
           <div className="">{p.left}</div>
           {["addition", "complement-10"].includes(p.type) && (
-            <div className="">+</div>
+            <div className="font-light">+</div>
           )}
-          {p.type === "multiplication" && (
-            <div className="pt-2 text-3xl">x</div>
-          )}
+          {p.type === "multiplication" && <div className="font-light">x</div>}
           {p.type === "complement-10" && (
             <div className="text-yellow-500">?</div>
           )}
           {["addition", "multiplication"].includes(p.type) && (
             <div className="">{p.right}</div>
           )}
-          <div>=</div>
+          <div className="font-light">=</div>
           {p.type === "complement-10" && <div className="">{p.answer}</div>}
           {["addition", "multiplication"].includes(p.type) && (
             <div className="text-yellow-500">?</div>
@@ -127,13 +125,13 @@ function ProblemView({
         </div>
       </div>
 
-      <div className="flex flex-row gap-x-4 justify-center">
+      <div className="flex flex-row gap-x-4 justify-center flex-wrap gap-y-4">
         {choices.map((c, i) => (
           <div
             className={classNames(
-              "flex flex-col border-1 w-32 items-center rounded-xl text-indigo-800 p-4 shadow-md bg-gray-100 select-none",
+              "flex flex-col border-1 w-32 items-center select-none rounded-xl text-indigo-800 p-4 shadow-md bg-gray-100 select-none",
               c.state === null
-                ? "cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all"
+                ? "cursor-pointer lg:hover:shadow-md lg:hover:-translate-y-1 transition-all"
                 : c.state
                 ? "bg-green-300 text-green-800"
                 : "bg-red-300 text-red-800"
@@ -246,10 +244,10 @@ export default function Home() {
   }, [gameState]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-indigo-100 text-black pt-16">
+    <main className="font-nunito flex min-h-screen flex-col items-center bg-indigo-100 text-black pt-16">
       {gameState.state === "finished" && (
         <>
-          <div className="text-2xl text-nunito max-w-4xl font-bold text-violet-600">
+          <div className="text-2xl max-w-4xl font-bold text-violet-600">
             Tu as fait {gameState.score} points en 2mn.
           </div>
           <div className="pt-8 text-base">
@@ -272,7 +270,7 @@ export default function Home() {
       {gameState.state === "playing" && (
         <>
           <ProblemView p={gameState.problem} onChoice={handleChoice} />
-          <div className="flex flex-col text-center justify-center gap-y-2 mt-16 font-nunito">
+          <div className="flex flex-col text-center justify-center gap-y-2 mt-16">
             <div className="text-xl font-semibold">
               Score:{" "}
               <span className="text-violet-600 text-2xl ">
@@ -290,7 +288,7 @@ export default function Home() {
       )}
       {gameState.state === "waiting" && (
         <>
-          <div className="text-base w-96 font-nunito text-indigo-900 text-center font-semibold">
+          <div className="px-4 text-base w-96 text-indigo-900 text-center font-semibold">
             Tu dois faire 20 points en 2mn. Tu gagnes 1 point par bonne réponse
             et perds 1 point par mauvaise réponse! Tu es prêt?
           </div>
