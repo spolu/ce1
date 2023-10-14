@@ -53,7 +53,7 @@ function Button({
 }) {
   return (
     <button
-      className="flex text-base bg-indigo-500 hover:bg-indigo-600 text-white p-4 rounded-xl shadow-md font-semibold uppercase tracking-tight"
+      className="flex text-base bg-indigo-500 hover:bg-indigo-600 text-white p-4 rounded-xl shadow-md font-semibold uppercase tracking-tight justify-center"
       onClick={onClick}
     >
       {children}
@@ -249,7 +249,7 @@ export default function Home() {
     <main className="font-nunito flex min-h-screen flex-col items-center bg-indigo-100 text-black pt-16">
       {gameState.state === "finished" && (
         <>
-          <div className="text-2xl max-w-4xl font-bold text-indigo-600">
+          <div className="text-xl max-w-4xl font-bold text-indigo-900">
             Tu as fait {gameState.score} points en 2mn.
           </div>
           <div className="pt-8 text-base">
