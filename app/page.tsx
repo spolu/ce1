@@ -1,14 +1,13 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { MouseEvent, ReactNode, useEffect, useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 type Problem = {
-  type: "table-addition" | "complement-10";
+  type: "addition" | "complement-10" | "multiplication";
   left: number;
   right: number;
   answer: number;
@@ -45,6 +44,23 @@ function makeChoices(solution: number) {
   ];
 }
 
+function Button({
+  onClick,
+  children,
+}: {
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      className="flex text-base bg-indigo-500 hover:bg-indigo-600 text-white p-4 rounded-xl shadow-md font-semibold uppercase tracking-tight"
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
 function ProblemView({
   p,
   onChoice: onChoice,
@@ -66,9 +82,7 @@ function ProblemView({
   }, [p]);
 
   const handleChoice = (choice: Choice) => {
-    setTimeout(() => {
-      onChoice && choice.state === null && onChoice(choice);
-    }, 250);
+    onChoice && choice.state === null && onChoice(choice);
 
     const newChoices = choices.map((c) => {
       if (c === choice) {
@@ -89,33 +103,40 @@ function ProblemView({
   };
 
   return (
-    <div className="flex flex-col gap-y-24 lg:text-9xl font-semibold select-none text-4xl">
+    <div className="flex flex-col gap-y-16 font-semibold select-none text-4xl text-nunito">
       <div className="flex flex-row justify-center w-full">
         <div className="flex flex-row rounded-xl bg-yellow-50 p-8 gap-x-2 shadow-md">
           <div className="">{p.left}</div>
-          <div className="">+</div>
+          {["addition", "complement-10"].includes(p.type) && (
+            <div className="">+</div>
+          )}
+          {p.type === "multiplication" && (
+            <div className="pt-2 text-3xl">x</div>
+          )}
           {p.type === "complement-10" && (
             <div className="text-yellow-500">?</div>
           )}
-          {p.type === "table-addition" && <div className="">{p.right}</div>}
-          <div className="">=</div>
+          {["addition", "multiplication"].includes(p.type) && (
+            <div className="">{p.right}</div>
+          )}
+          <div>=</div>
           {p.type === "complement-10" && <div className="">{p.answer}</div>}
-          {p.type === "table-addition" && (
+          {["addition", "multiplication"].includes(p.type) && (
             <div className="text-yellow-500">?</div>
           )}
         </div>
       </div>
 
-      <div className="flex flex-row gap-x-4 lg:gap-x-16 justify-center">
+      <div className="flex flex-row gap-x-4 justify-center">
         {choices.map((c, i) => (
           <div
             className={classNames(
-              "flex flex-col border-1 rounded-xl p-4 shadow-md bg-gray-100 select-none",
+              "flex flex-col border-1 w-32 items-center rounded-xl text-indigo-800 p-4 shadow-md bg-gray-100 select-none",
               c.state === null
-                ? "cursor-pointer lg:hover:shadow-xl lg:hover:-translate-y-1 transition-all"
+                ? "cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all"
                 : c.state
-                ? "bg-green-300"
-                : "bg-red-300"
+                ? "bg-green-300 text-green-800"
+                : "bg-red-300 text-red-800"
             )}
             key={i}
             onClick={() => handleChoice(c)}
@@ -129,8 +150,12 @@ function ProblemView({
 }
 
 type GameState = {
-  state: "waiting" | "playing" | "won" | "lost";
-  gameType: "table-addition-1-5" | "table-addition-6-10" | "complement-10";
+  state: "waiting" | "playing" | "finished";
+  gameType:
+    | "addition-1-5"
+    | "addition-6-10"
+    | "complement-10"
+    | "multiplication-2-3";
   timeLeft: number;
   score: number;
   problem: Problem;
@@ -138,21 +163,29 @@ type GameState = {
 
 export default function Home() {
   const newProblem = (
-    gameType: "table-addition-1-5" | "table-addition-6-10" | "complement-10"
+    gameType:
+      | "addition-1-5"
+      | "addition-6-10"
+      | "complement-10"
+      | "multiplication-2-3"
   ) => {
     const left = Math.floor(Math.random() * 5) + 1;
     let right = 1;
-    let type: "table-addition" | "complement-10" = "table-addition";
+    let type: "addition" | "complement-10" | "multiplication" = "addition";
     switch (gameType) {
-      case "table-addition-1-5":
+      case "addition-1-5":
         right = Math.floor(Math.random() * 5) + 1;
         break;
-      case "table-addition-6-10":
+      case "addition-6-10":
         right = Math.floor(Math.random() * 5) + 6;
         break;
       case "complement-10":
         right = 10 - left;
         type = "complement-10";
+        break;
+      case "multiplication-2-3":
+        right = Math.floor(Math.random() * 2) + 2;
+        type = "multiplication";
         break;
     }
     const swap = Math.random() > 0.5;
@@ -160,17 +193,17 @@ export default function Home() {
       type,
       left: swap ? right : left,
       right: swap ? left : right,
-      answer: left + right,
+      answer: type === "multiplication" ? left * right : left + right,
     };
     return p;
   };
 
   const [gameState, setGameState] = useState<GameState>({
     state: "waiting",
-    gameType: "table-addition-1-5",
+    gameType: "addition-1-5",
     timeLeft: 120,
     score: 0,
-    problem: newProblem("table-addition-1-5"),
+    problem: newProblem("addition-1-5"),
   });
 
   const handleChoice = (c: Choice) => {
@@ -199,7 +232,7 @@ export default function Home() {
           if (s.timeLeft === 0) {
             return {
               ...s,
-              state: s.score >= 20 ? "won" : "lost",
+              state: "finished",
             };
           }
           return {
@@ -213,15 +246,14 @@ export default function Home() {
   }, [gameState]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 bg-blue-200 text-black pt-32">
-      {gameState.state === "won" && (
+    <main className="flex min-h-screen flex-col items-center bg-indigo-100 text-black pt-16">
+      {gameState.state === "finished" && (
         <>
-          <div className="pt-16 text-4xl lg:text-8xl max-w-4xl font-bold text-green-600">
+          <div className="text-2xl text-nunito max-w-4xl font-bold text-violet-600">
             Tu as fait {gameState.score} points en 2mn.
           </div>
-          <div className="pt-16 text-2xl">
-            <button
-              className="bg-green-100 p-4 rounded-xl shadow-md font-bold"
+          <div className="pt-8 text-base">
+            <Button
               onClick={() =>
                 setGameState({
                   ...gameState,
@@ -233,46 +265,23 @@ export default function Home() {
               }
             >
               Recommencer
-            </button>
-          </div>
-        </>
-      )}
-      {gameState.state === "lost" && (
-        <>
-          <div className="pt-16 text-4xl lg:text-8xl max-w-4xl font-bold text-orange-600">
-            Tu as fait {gameState.score} points en 2mn.
-          </div>
-          <div className="pt-16 text-2xl">
-            <button
-              className="bg-green-100 p-4 rounded-xl shadow-md font-bold"
-              onClick={() =>
-                setGameState({
-                  ...gameState,
-                  state: "playing",
-                  timeLeft: 120,
-                  gameType: gameState.gameType,
-                  score: 0,
-                })
-              }
-            >
-              Recommencer
-            </button>
+            </Button>
           </div>
         </>
       )}
       {gameState.state === "playing" && (
         <>
           <ProblemView p={gameState.problem} onChoice={handleChoice} />
-          <div className="flex flex-col justify-center gap-y-4 mt-16 lg:mt-32 font-mono">
-            <div className="text-2xl lg:text-5xl font-semibold">
+          <div className="flex flex-col text-center justify-center gap-y-2 mt-16 font-nunito">
+            <div className="text-xl font-semibold">
               Score:{" "}
-              <span className="text-violet-600 text-3xl lg:text-6xl">
+              <span className="text-violet-600 text-2xl ">
                 {gameState.score}
               </span>
             </div>
-            <div className="text-2xl lg:text-5xl font-semibold">
+            <div className="text-xl font-semibold">
               Temps restant:{" "}
-              <span className="text-violet-600 text-3xl lg:text-6xl">
+              <span className="text-violet-600 text-2xl">
                 {gameState.timeLeft}s
               </span>
             </div>
@@ -281,49 +290,40 @@ export default function Home() {
       )}
       {gameState.state === "waiting" && (
         <>
-          <div className="pt-16 text-2xl max-w-xl">
-            Tu dois faire 20 points en 2mn.
-            <br />
-            <br />
-            Tu gagnes 1 point par bonne réponse et perds 1 point par mauvaise
-            réponse!
-            <br />
-            <br />
-            Tu es prêt?
+          <div className="text-base w-96 font-nunito text-indigo-900 text-center font-semibold">
+            Tu dois faire 20 points en 2mn. Tu gagnes 1 point par bonne réponse
+            et perds 1 point par mauvaise réponse! Tu es prêt?
           </div>
-          <div className="pt-16 text-2xl flex flex-col gap-y-2">
-            <button
-              className="flex bg-green-100 p-4 rounded-xl shadow-md font-bold"
+          <div className="pt-16 text-base flex flex-col gap-y-2">
+            <Button
               onClick={() =>
                 setGameState({
                   ...gameState,
-                  gameType: "table-addition-1-5",
+                  gameType: "addition-1-5",
                   state: "playing",
                   timeLeft: 120,
                   score: 0,
-                  problem: newProblem("table-addition-1-5"),
+                  problem: newProblem("addition-1-5"),
                 })
               }
             >
-              {"Tables d'additions 1-5"}
-            </button>
-            <button
-              className="flex bg-green-100 p-4 rounded-xl shadow-md font-bold"
+              {"Additions 1-5"}
+            </Button>
+            <Button
               onClick={() =>
                 setGameState({
                   ...gameState,
-                  gameType: "table-addition-6-10",
+                  gameType: "addition-6-10",
                   state: "playing",
                   timeLeft: 120,
                   score: 0,
-                  problem: newProblem("table-addition-6-10"),
+                  problem: newProblem("addition-6-10"),
                 })
               }
             >
-              {"Tables d'additions 6-10"}
-            </button>
-            <button
-              className="flex bg-green-100 p-4 rounded-xl shadow-md font-bold"
+              {"Additions 6-10"}
+            </Button>
+            <Button
               onClick={() =>
                 setGameState({
                   ...gameState,
@@ -336,7 +336,21 @@ export default function Home() {
               }
             >
               {"Compléments à 10"}
-            </button>
+            </Button>
+            <Button
+              onClick={() =>
+                setGameState({
+                  ...gameState,
+                  gameType: "multiplication-2-3",
+                  state: "playing",
+                  timeLeft: 120,
+                  score: 0,
+                  problem: newProblem("multiplication-2-3"),
+                })
+              }
+            >
+              {"Multiplications 2-3"}
+            </Button>
           </div>
         </>
       )}
