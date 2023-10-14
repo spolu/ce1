@@ -291,8 +291,8 @@ export default function Home() {
       {gameState.state === "waiting" && (
         <>
           <div className="px-4 text-base w-96 text-indigo-900 text-center font-semibold">
-            Tu dois faire 20 points en 2mn. Tu gagnes 1 point par bonne réponse
-            et perds 1 point par mauvaise réponse! Tu es prêt?
+            Tu dois faire un maximum de points en 2mn. Tu gagnes 1 point par
+            bonne réponse et perds 1 point par mauvaise réponse! Prêt?
           </div>
           <div className="pt-16 text-base flex flex-col gap-y-2">
             <Button
