@@ -167,7 +167,7 @@ export default function Home() {
       | "complement-10"
       | "multiplication-2-3"
   ) => {
-    const left = Math.floor(Math.random() * 5) + 1;
+    let left = Math.floor(Math.random() * 5) + 1;
     let right = 1;
     let type: "addition" | "complement-10" | "multiplication" = "addition";
     switch (gameType) {
@@ -176,6 +176,7 @@ export default function Home() {
         break;
       case "addition-6-10":
         right = Math.floor(Math.random() * 5) + 6;
+        left = Math.floor(Math.random() * 9) + 1;
         break;
       case "complement-10":
         right = 10 - left;
@@ -183,6 +184,7 @@ export default function Home() {
         break;
       case "multiplication-2-3":
         right = Math.floor(Math.random() * 2) + 2;
+        left = Math.floor(Math.random() * 9) + 1;
         type = "multiplication";
         break;
     }
