@@ -153,7 +153,7 @@ type GameState = {
     | "addition-1-5"
     | "addition-6-10"
     | "complement-10"
-    | "multiplication-2-3";
+    | "multiplication-2-5";
   timeLeft: number;
   score: number;
   problem: Problem;
@@ -165,7 +165,7 @@ export default function Home() {
       | "addition-1-5"
       | "addition-6-10"
       | "complement-10"
-      | "multiplication-2-3"
+      | "multiplication-2-5"
   ) => {
     let left = Math.floor(Math.random() * 5) + 1;
     let right = 1;
@@ -182,8 +182,8 @@ export default function Home() {
         right = 10 - left;
         type = "complement-10";
         break;
-      case "multiplication-2-3":
-        right = Math.floor(Math.random() * 2) + 2;
+      case "multiplication-2-5":
+        right = Math.floor(Math.random() * 4) + 2;
         left = Math.floor(Math.random() * 9) + 1;
         type = "multiplication";
         break;
@@ -343,15 +343,15 @@ export default function Home() {
               onClick={() =>
                 setGameState({
                   ...gameState,
-                  gameType: "multiplication-2-3",
+                  gameType: "multiplication-2-5",
                   state: "playing",
                   timeLeft: 120,
                   score: 0,
-                  problem: newProblem("multiplication-2-3"),
+                  problem: newProblem("multiplication-2-5"),
                 })
               }
             >
-              {"Multiplications 2-3"}
+              {"Multiplications 2-5"}
             </Button>
           </div>
         </>
