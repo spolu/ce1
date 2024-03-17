@@ -19,7 +19,7 @@ type Choice = {
   state: boolean | null;
 };
 
-function makeChoices(solution: number) {
+function makeSimpleAdditionChoices(solution: number) {
   return [
     {
       value: solution,
@@ -38,6 +38,31 @@ function makeChoices(solution: number) {
     },
     {
       value: (solution + 2) % 16,
+      correct: false,
+      state: null,
+    },
+  ];
+}
+
+function makeMultiplicationChoices(solution: number) {
+  return [
+    {
+      value: solution,
+      correct: true,
+      state: null,
+    },
+    {
+      value: (solution * 7) % solution,
+      correct: false,
+      state: null,
+    },
+    {
+      value: (solution * 5) % solution,
+      correct: false,
+      state: null,
+    },
+    {
+      value: (solution * 2) % solution,
       correct: false,
       state: null,
     },
@@ -73,9 +98,11 @@ function ProblemView({
   useEffect(() => {
     let choices: Choice[] = [];
     if (p.type === "complement-10") {
-      choices = makeChoices(p.right);
+      choices = makeSimpleAdditionChoices(p.right);
+    } else if (p.type === "multiplication") {
+      choices = makeMultiplicationChoices(p.left * p.right);
     } else {
-      choices = makeChoices(p.answer);
+      choices = makeSimpleAdditionChoices(p.answer);
     }
     choices.sort(() => Math.random() - 0.5);
     setChoicees(choices);
