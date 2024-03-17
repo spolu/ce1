@@ -53,17 +53,17 @@ function makeMultiplicationChoices(solution: number) {
     },
     {
       value: ((solution + 1) * 7) % (2 * solution),
-      correct: false,
+      correct: ((solution + 1) * 7) % (2 * solution) === solution,
       state: null,
     },
     {
       value: ((solution + 1) * 5) % (2 * solution),
-      correct: false,
+      correct: ((solution + 1) * 5) % (2 * solution) === solution,
       state: null,
     },
     {
       value: ((solution + 1) * 2) % (2 * solution),
-      correct: false,
+      correct: ((solution + 1) * 2) % (2 * solution) === solution,
       state: null,
     },
   ];
