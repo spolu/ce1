@@ -1,13 +1,25 @@
 "use client";
 
+const GAME_TIME = 60;
+
 import { ReactNode, useEffect, useState } from "react";
+
+type GameType =
+  | "addition-1-5"
+  | "addition-6-10"
+  | "complement-10"
+  | "multiplication-2-5"
+  | "multiplication-6-9";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+type ProblemType = "addition" | "complement-10" | "multiplication";
+
 type Problem = {
-  type: "addition" | "complement-10" | "multiplication";
+  gameType: GameType;
+  type: ProblemType;
   left: number;
   right: number;
   answer: number;
@@ -44,7 +56,17 @@ function makeSimpleAdditionChoices(solution: number) {
   ];
 }
 
-function makeMultiplicationChoices(solution: number) {
+function makeMultiplicationChoices(problem: Problem) {
+  const solution = problem.left * problem.right;
+  let choices = [0, 1, 2].map((_) => {
+    const left = Math.floor(Math.random() * 9) + 1;
+    let right = Math.floor(Math.random() * 4) + 2;
+    if (problem.gameType === "multiplication-6-9") {
+      right = Math.floor(Math.random() * 4) + 6;
+    }
+    return right * left;
+  });
+
   return [
     {
       value: solution,
@@ -52,20 +74,35 @@ function makeMultiplicationChoices(solution: number) {
       state: null,
     },
     {
-      value: ((solution + 1) * 7) % (2 * solution),
-      correct: ((solution + 1) * 7) % (2 * solution) === solution,
+      value: choices[0],
+      correct: choices[0] === solution,
       state: null,
     },
     {
-      value: ((solution + 1) * 5) % (2 * solution),
-      correct: ((solution + 1) * 5) % (2 * solution) === solution,
+      value: choices[1],
+      correct: choices[1] === solution,
       state: null,
     },
     {
-      value: ((solution + 1) * 2) % (2 * solution),
-      correct: ((solution + 1) * 2) % (2 * solution) === solution,
+      value: choices[2],
+      correct: choices[2] === solution,
       state: null,
     },
+    // {
+    //   value: ((solution + 1) * 7) % (2 * solution),
+    //   correct: ((solution + 1) * 7) % (2 * solution) === solution,
+    //   state: null,
+    // },
+    // {
+    //   value: ((solution + 1) * 5) % (2 * solution),
+    //   correct: ((solution + 1) * 5) % (2 * solution) === solution,
+    //   state: null,
+    // },
+    // {
+    //   value: ((solution + 1) * 2) % (3 * solution),
+    //   correct: ((solution + 1) * 2) % (3 * solution) === solution,
+    //   state: null,
+    // },
   ];
 }
 
@@ -100,7 +137,7 @@ function ProblemView({
     if (p.type === "complement-10") {
       choices = makeSimpleAdditionChoices(p.right);
     } else if (p.type === "multiplication") {
-      choices = makeMultiplicationChoices(p.left * p.right);
+      choices = makeMultiplicationChoices(p);
     } else {
       choices = makeSimpleAdditionChoices(p.answer);
     }
@@ -176,27 +213,17 @@ function ProblemView({
 
 type GameState = {
   state: "waiting" | "playing" | "finished";
-  gameType:
-    | "addition-1-5"
-    | "addition-6-10"
-    | "complement-10"
-    | "multiplication-2-5";
+  gameType: GameType;
   timeLeft: number;
   score: number;
   problem: Problem;
 };
 
 export default function Home() {
-  const newProblem = (
-    gameType:
-      | "addition-1-5"
-      | "addition-6-10"
-      | "complement-10"
-      | "multiplication-2-5"
-  ) => {
+  const newProblem = (gameType: GameType) => {
     let left = Math.floor(Math.random() * 5) + 1;
     let right = 1;
-    let type: "addition" | "complement-10" | "multiplication" = "addition";
+    let type: ProblemType = "addition";
     switch (gameType) {
       case "addition-1-5":
         right = Math.floor(Math.random() * 5) + 1;
@@ -214,9 +241,15 @@ export default function Home() {
         left = Math.floor(Math.random() * 9) + 1;
         type = "multiplication";
         break;
+      case "multiplication-6-9":
+        right = Math.floor(Math.random() * 4) + 6;
+        left = Math.floor(Math.random() * 9) + 1;
+        type = "multiplication";
+        break;
     }
     const swap = Math.random() > 0.5;
     const p: Problem = {
+      gameType,
       type,
       left: swap ? right : left,
       right: swap ? left : right,
@@ -228,7 +261,7 @@ export default function Home() {
   const [gameState, setGameState] = useState<GameState>({
     state: "waiting",
     gameType: "addition-1-5",
-    timeLeft: 120,
+    timeLeft: GAME_TIME,
     score: 0,
     problem: newProblem("addition-1-5"),
   });
@@ -279,7 +312,7 @@ export default function Home() {
       {gameState.state === "finished" && (
         <>
           <div className="text-xl max-w-4xl font-bold text-indigo-900">
-            Tu as fait {gameState.score} points en 2mn.
+            Tu as fait {gameState.score} points en 1mn.
           </div>
           <div className="pt-8 text-base">
             <Button
@@ -287,7 +320,7 @@ export default function Home() {
                 setGameState({
                   ...gameState,
                   state: "playing",
-                  timeLeft: 120,
+                  timeLeft: GAME_TIME,
                   gameType: gameState.gameType,
                   score: 0,
                 })
@@ -320,7 +353,7 @@ export default function Home() {
       {gameState.state === "waiting" && (
         <>
           <div className="px-4 text-base w-96 text-indigo-900 text-center font-semibold">
-            Tu dois faire un maximum de points en 2mn. Tu gagnes 1 point par
+            Tu dois faire un maximum de points en 1mn. Tu gagnes 1 point par
             bonne réponse et perds 1 point par mauvaise réponse! Prêt?
           </div>
           <div className="pt-16 text-base flex flex-col gap-y-2">
@@ -330,7 +363,7 @@ export default function Home() {
                   ...gameState,
                   gameType: "addition-1-5",
                   state: "playing",
-                  timeLeft: 120,
+                  timeLeft: GAME_TIME,
                   score: 0,
                   problem: newProblem("addition-1-5"),
                 })
@@ -344,7 +377,7 @@ export default function Home() {
                   ...gameState,
                   gameType: "addition-6-10",
                   state: "playing",
-                  timeLeft: 120,
+                  timeLeft: GAME_TIME,
                   score: 0,
                   problem: newProblem("addition-6-10"),
                 })
@@ -358,7 +391,7 @@ export default function Home() {
                   ...gameState,
                   gameType: "complement-10",
                   state: "playing",
-                  timeLeft: 120,
+                  timeLeft: GAME_TIME,
                   score: 0,
                   problem: newProblem("complement-10"),
                 })
@@ -372,13 +405,27 @@ export default function Home() {
                   ...gameState,
                   gameType: "multiplication-2-5",
                   state: "playing",
-                  timeLeft: 120,
+                  timeLeft: GAME_TIME,
                   score: 0,
                   problem: newProblem("multiplication-2-5"),
                 })
               }
             >
               {"Multiplications 2-5"}
+            </Button>
+            <Button
+              onClick={() =>
+                setGameState({
+                  ...gameState,
+                  gameType: "multiplication-6-9",
+                  state: "playing",
+                  timeLeft: GAME_TIME,
+                  score: 0,
+                  problem: newProblem("multiplication-6-9"),
+                })
+              }
+            >
+              {"Multiplications 6-9"}
             </Button>
           </div>
         </>
